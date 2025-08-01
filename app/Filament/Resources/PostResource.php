@@ -12,8 +12,12 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use GalleryJsonMedia\Form\JsonMediaGallery;
 
 use AmidEsfahani\FilamentTinyEditor\TinyEditor;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Illuminate\Support\Str;
 
 class PostResource extends Resource
 {
@@ -25,12 +29,17 @@ class PostResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Textarea::make('title')
-                    ->required()
-                    ->columnSpanFull(),
+                Forms\Components\TextInput::make('title')
+                    ->required(),
                 Forms\Components\TextInput::make('slug')
                     ->required()
-                    ->maxLength(255),
+                    ->afterStateUpdated(function (Get $get, Set $set, ?string $old, ?string $state) {
+                        if (($get('slug') ?? '') !== Str::slug($old)) {
+                            return;
+                        }
+                    
+                        $set('slug', Str::slug($state));
+                    }),
                 TinyEditor::make('content')
                     ->fileAttachmentsDisk('uploads')
                     ->fileAttachmentsDirectory('posts')
@@ -45,27 +54,48 @@ class PostResource extends Resource
                     ->required()
                     ->searchable()
                     ->preload(),
-                Forms\Components\Toggle::make('is_published')
-                    ->required(),
+                Forms\Components\Select::make('tags')
+                    ->multiple()
+                    ->relationship('tags', 'name')
+                    ->preload()
+                    ->searchable()
+                    ->required()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required(),
+                    ]),
                 Forms\Components\FileUpload::make('featured_image')
                     ->image(),
-                Forms\Components\TextInput::make('gallery_images'),
-                Forms\Components\Textarea::make('meta_title')
+                JsonMediaGallery::make('gallery_images')
+                    ->directory('posts')
+                    ->reorderable()
+                    ->preserveFilenames()
+                    ->acceptedFileTypes(['image/*'])
+                    ->visibility('public')
+                    ->maxSize(4 * 1024)
+                    ->maxFiles(10)
+                    ->minFiles(2)
+                    ->image()
+                    ->downloadable()
+                    ->deletable()
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('meta_description')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('meta_keywords')
-                    ->columnSpanFull(),
+                Forms\Components\Fieldset::make('Seo Meta')
+                    ->schema([
+                        Forms\Components\TextInput::make('meta_title')
+                            ->columnSpanFull(),
+                        Forms\Components\Textarea::make('meta_description')
+                            ->columnSpanFull(),
+                        Forms\Components\TagsInput::make('meta_keywords')
+                            ->columnSpanFull(),
+                    ]),
                 Forms\Components\Toggle::make('is_featured')
                     ->required(),
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
-                Forms\Components\TextInput::make('view_count')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                Forms\Components\Toggle::make('is_published')
+                    ->required(),
             ]);
-    }
+    } 
 
     public static function table(Table $table): Table
     {

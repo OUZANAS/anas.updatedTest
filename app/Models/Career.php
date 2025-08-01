@@ -3,34 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Filament\Resources\Concerns\Translatable;
 use GalleryJsonMedia\JsonMedia\Concerns\InteractWithMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Post extends Model implements HasMedia
+class Career extends Model implements HasMedia
 {
     use HasFactory;
     use InteractWithMedia;
-    use Translatable;
 
     protected $guarded = [];
 
-    protected $translatable = ['title', 'content', 'meta_title', 'meta_description', 'meta_keywords'];
-
-    public function category()
+    public function jobType()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(JobType::class);
+    }
+
+    public function jobCategory()
+    {
+        return $this->belongsTo(JobCategory::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
     public function tags()
     {
-        return $this->belongsToMany(Tag::class, 'post_tags', 'post_id', 'tag_id');
-    }
-
-    public function author()
-    {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsToMany(Tag::class, 'career_tags');
     }
 
     protected $casts =[

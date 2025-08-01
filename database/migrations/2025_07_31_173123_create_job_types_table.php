@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('job_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('title');
+            $table->string('title');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->string('color')->default('#000000');
             $table->boolean('is_active')->default(true);
-            $table->integer('order')->default(0);
-            $table->string('image')->nullable(); // Hna tayjib ghir image as string ms 7na Khassani real image (url or path) alors an9addoha f model bach ijib lina image url 
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('job_types');
     }
 };

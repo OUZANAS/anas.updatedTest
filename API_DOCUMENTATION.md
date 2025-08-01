@@ -50,6 +50,10 @@ GET /api/categories?parent_id=1&order_by=title&order_direction=desc
       "updated_at": "2025-07-29 10:00:00"
     }
   ],
+  //is it  important ?
+  // important f local bach testi bih api 
+  // sinon t9dr t hosti hadchi fchi server bach ikon 3ndk url (kayn chiwahd) not sure but dkhol o 9ad subdomaine o khdem (agrimenara, ejoblist matwsslhom)
+  //
   "links": {
     "first": "http://yoursite.com/api/categories?page=1",
     "last": "http://yoursite.com/api/categories?page=1",
