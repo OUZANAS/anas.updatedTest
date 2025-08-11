@@ -52,7 +52,7 @@ return [
             'root' => storage_path('app/public/uploads'),
             'url' => env('APP_URL').'/storage/uploads',
             'visibility' => 'public',
-            'throw' => false,
+            'throw' => true,
             'report' => false,
         ],
 

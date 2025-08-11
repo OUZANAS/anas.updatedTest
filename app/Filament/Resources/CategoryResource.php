@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 //use Filament\Resources\Concerns\Translatable;
 
@@ -68,9 +69,18 @@ class CategoryResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(0),
+                Forms\Components\Select::make('type')
+                    ->required()
+                    ->options([
+                        'career' => 'Career',
+                        'post' => 'Post',
+                    ]),
                 Forms\Components\FileUpload::make('image')
                     ->image()
-                    ->disk('uploads'),
+                    ->disk('uploads')
+                    ->directory('categories')
+                    ->columnSpanFull()
+                    ->label('Image'),
             ]);
     }
 
@@ -90,7 +100,10 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('order')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->disk('uploads')
+                    ->circular()
+                    ->label('Image'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -104,7 +117,15 @@ class CategoryResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver()
+                    ->mutateFormDataUsing(function (array $data): array {
+                        if (isset($data['is_subcategory'])) {
+                            unset($data['is_subcategory']);
+                        }
+
+                        return $data;
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -119,5 +140,32 @@ class CategoryResource extends Resource
         return [
             'index' => Pages\ManageCategories::route('/'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'title',
+            'slug',
+            'description',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return (string) ($record->title ?? $record->slug);
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Type' => (string) $record->type,
+            'Parent' => optional($record->parent)->title,
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return static::getUrl('index');
     }
 }

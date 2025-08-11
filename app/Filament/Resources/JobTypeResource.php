@@ -29,16 +29,17 @@ class JobTypeResource extends Resource
                 Forms\Components\TextInput::make('slug')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Forms\Components\RichEditor::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('color')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('#000000'),
-                Forms\Components\Toggle::make('is_active')
+                Forms\Components\ColorPicker::make('color')
                     ->required(),
                 Forms\Components\FileUpload::make('image')
+                    ->disk('uploads')
+                    ->directory('job_types')
                     ->image(),
+
+                Forms\Components\Toggle::make('is_active')
+                    ->required(),
             ]);
     }
 
@@ -50,11 +51,14 @@ class JobTypeResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('color')
+                Tables\Columns\ColorColumn::make('color')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->disk('uploads')
+                    ->circular()
+                    ->label('Image'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -68,7 +72,8 @@ class JobTypeResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->slideOver(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

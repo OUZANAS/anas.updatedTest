@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->enum('type', ['career', 'post'])->default('post');
             $table->text('title');
             $table->string('slug')->unique();
             $table->text('description')->nullable();

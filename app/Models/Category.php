@@ -28,8 +28,13 @@ class Category extends Model
         return $this->hasMany(Post::class);
     }
  
-    public function getImageAttribute()
+    public function getImageUrl()
     {
         return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    public function careers()
+    {
+        return $this->hasMany(Career::class);
     }
 }

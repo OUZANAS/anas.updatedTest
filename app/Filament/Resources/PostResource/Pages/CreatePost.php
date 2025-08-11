@@ -12,9 +12,13 @@ class CreatePost extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = auth()->id();
+        $data['user_id'] = \Illuminate\Support\Facades\Auth::id();
 
-        $data['published_at'] = now();
+        if (isset($data['is_published']) && $data['is_published'] === true) {
+            $data['published_at'] = now();
+        } else {
+            $data['published_at'] = null;
+        }
 
         return $data;
     }

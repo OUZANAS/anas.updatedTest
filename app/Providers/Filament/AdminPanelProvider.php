@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 // new plugins
 use Filament\SpatieLaravelTranslatablePlugin;
+use Filament\Navigation\MenuItem;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -30,8 +31,28 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
-            ])    
+                'primary' => Color::Amber,  
+            ])
+            ->darkMode(true)
+            ->brandLogo(asset('asset/images/Logo.png'))
+            ->brandName('Admin Dashboard')
+            // Load custom CSS additively (keeps Filament core styles)
+            ->renderHook('panels::head.end', fn () => view('filament.theme'))
+            ->favicon(asset('favicon.ico'))
+            ->font('Inter')
+            ->sidebarCollapsibleOnDesktop()
+            // New: helpful user menu shortcuts
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('View site')
+                    ->icon('heroicon-o-globe-alt')
+                    ->url(url('/'))
+                    ->openUrlInNewTab(),
+                MenuItem::make()
+                    ->label('Support')
+                    ->icon('heroicon-o-lifebuoy')
+                    ->url('mailto:support@anas.com'),
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -39,8 +60,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                //Widgets\AccountWidget::class,
-                //Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                // Keep only these two new widgets the user wants
+                \App\Filament\Widgets\QuickLinks::class,
+                \App\Filament\Widgets\ContentActivityChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

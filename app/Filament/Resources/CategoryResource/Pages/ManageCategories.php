@@ -19,8 +19,11 @@ class ManageCategories extends ManageRecords
             Actions\CreateAction::make()
             ->slideOver()
             ->mutateFormDataUsing(function (array $data): array {
-                unset($data['is_subcategory']);
-                //dd($data);
+
+                if (isset($data['is_subcategory'])) {
+                    unset($data['is_subcategory']);
+                }
+
                 return $data;
             }),
         ];

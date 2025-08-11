@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CityResource extends Resource
@@ -34,6 +35,8 @@ class CityResource extends Resource
                 Forms\Components\Toggle::make('is_active')
                     ->required(),
                 Forms\Components\FileUpload::make('image')
+                    ->disk('uploads')
+                    ->directory('cities')
                     ->image(),
             ]);
     }
@@ -48,7 +51,10 @@ class CityResource extends Resource
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\ImageColumn::make('image'),
+                Tables\Columns\ImageColumn::make('image')
+                    ->disk('uploads')
+                    ->circular()
+                    ->label('Image'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -77,5 +83,31 @@ class CityResource extends Resource
         return [
             'index' => Pages\ManageCities::route('/'),
         ];
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'title',
+            'slug',
+            'description',
+        ];
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return (string) ($record->title ?? $record->slug);
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Active' => $record->is_active ? 'Yes' : 'No',
+        ];
+    }
+
+    public static function getGlobalSearchResultUrl(Model $record): string
+    {
+        return static::getUrl('index');
     }
 }

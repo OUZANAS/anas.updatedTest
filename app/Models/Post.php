@@ -7,12 +7,14 @@ use Filament\Resources\Concerns\Translatable;
 use GalleryJsonMedia\JsonMedia\Concerns\InteractWithMedia;
 use GalleryJsonMedia\JsonMedia\Contracts\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements HasMedia
 {
     use HasFactory;
     use InteractWithMedia;
     use Translatable;
+    use SoftDeletes;
 
     protected $guarded = [];
 
@@ -34,12 +36,16 @@ class Post extends Model implements HasMedia
     }
 
     protected $casts =[
-        'images' => 'array',
-        'documents' => 'array',
+        'gallery_images' => 'array',
+        'meta_keywords' => 'array',
+        'published_at' => 'datetime',
+        'is_published' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_active' => 'boolean',
     ];
  
     // for auto-delete media thumbnails
     protected function getFieldsToDeleteMedia(): array {
-        return ['images','documents'];
+        return ['gallery_images'];
     }
 }

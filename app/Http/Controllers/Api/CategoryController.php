@@ -36,6 +36,10 @@ class CategoryController extends Controller
             $query->where('parent_id', $request->input('parent_id'));
         }
 
+        if ($request->has('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
         // Search functionality
         if ($request->has('search')) {
             $searchTerm = $request->input('search');

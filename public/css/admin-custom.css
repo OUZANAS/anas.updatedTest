@@ -1,0 +1,15 @@
+/* Custom styles for the admin topbar */
+.filament-main-topbar {
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filament-main-topbar .custom-logo {
+    height: 32px;
+    width: auto;
+}
+
+/* Dark mode styles */
+.dark .filament-main-topbar {
+    background-color: #1f2937;
+}

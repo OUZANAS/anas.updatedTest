@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('excerpt')->nullable();
             $table->longText('content');
             $table->string('featured_image')->nullable();
-            $table->string('company_name');
+            $table->string('company_name')->nullable();
             $table->string('company_website')->nullable();
             $table->string('company_logo')->nullable();
             $table->string('location')->nullable();
@@ -35,8 +35,8 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();
-            $table->unsignedBigInteger('job_category_id')->nullable();
-            $table->foreign('job_category_id')->references('id')->on('job_categories')->onDelete('set null');
+            $table->unsignedBigInteger('category_id')->nullable();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('set null');
             $table->unsignedBigInteger('city_id')->nullable();
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
             $table->enum('contract_type', ['cdi', 'cdd', 'freelance', 'internship', 'temporary'])->default('cdi');
